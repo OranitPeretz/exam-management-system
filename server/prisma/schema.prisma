@@ -1,0 +1,318 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  LECTURER
+  STUDENT
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  DROPPED
+}
+
+enum ExamStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+  GRADING
+  RESULTS_PUBLISHED
+  ARCHIVED
+}
+
+enum QuestionTypeCode {
+  SINGLE_CHOICE
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  SHORT_TEXT
+  LONG_TEXT
+  NUMERIC
+}
+
+enum AttemptStatus {
+  IN_PROGRESS
+  SUBMITTED
+  AUTO_SUBMITTED
+  GRADING
+  GRADED
+}
+
+enum NotificationType {
+  EXAM_PUBLISHED
+  EXAM_REMINDER
+  EXAM_SUBMITTED
+  RESULTS_PUBLISHED
+  SYSTEM
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  role         UserRole
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime @updatedAt @db.Timestamptz(3)
+
+  refreshTokens  RefreshToken[]
+  coursesTaught  Course[]       @relation("CourseLecturer")
+  examsCreated   Exam[]         @relation("ExamCreator")
+  enrollments    Enrollment[]
+  attempts       ExamAttempt[]  @relation("StudentAttempts")
+  gradedAttempts ExamAttempt[]  @relation("AttemptGrader")
+  notifications  Notification[]
+  auditLogs      AuditLog[]     @relation("AuditActor")
+
+  @@index([role])
+  @@index([isActive])
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime  @db.Timestamptz(3)
+  revokedAt DateTime? @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("refresh_tokens")
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  name        String
+  description String?
+  lecturerId  String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
+
+  lecturer    User         @relation("CourseLecturer", fields: [lecturerId], references: [id], onDelete: Restrict)
+  enrollments Enrollment[]
+  exams       Exam[]
+
+  @@index([lecturerId])
+  @@index([isActive])
+  @@map("courses")
+}
+
+model Enrollment {
+  id        String           @id @default(cuid())
+  courseId  String
+  studentId String
+  status    EnrollmentStatus @default(ACTIVE)
+  createdAt DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime         @updatedAt @db.Timestamptz(3)
+
+  course  Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  student User   @relation(fields: [studentId], references: [id], onDelete: Restrict)
+
+  @@unique([courseId, studentId])
+  @@index([studentId])
+  @@index([courseId, status])
+  @@map("enrollments")
+}
+
+model QuestionType {
+  id             String           @id @default(cuid())
+  code           QuestionTypeCode @unique
+  name           String
+  description    String?
+  isAutoGradable Boolean
+  isActive       Boolean          @default(true)
+  createdAt      DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime         @updatedAt @db.Timestamptz(3)
+
+  questions Question[]
+
+  @@index([isActive])
+  @@map("question_types")
+}
+
+model Exam {
+  id                 String     @id @default(cuid())
+  courseId           String
+  createdById        String
+  title              String
+  description        String?
+  instructions       String?
+  status             ExamStatus @default(DRAFT)
+  startAt            DateTime?  @db.Timestamptz(3)
+  endAt              DateTime?  @db.Timestamptz(3)
+  durationMinutes    Int        @default(60)
+  maxAttempts        Int        @default(1)
+  passingPercentage  Float      @default(60)
+  shuffleQuestions   Boolean    @default(false)
+  showFeedback       Boolean    @default(true)
+  version            Int        @default(1)
+  publishedAt        DateTime?  @db.Timestamptz(3)
+  resultsPublishedAt DateTime?  @db.Timestamptz(3)
+  createdAt          DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt          DateTime   @updatedAt @db.Timestamptz(3)
+
+  course    Course        @relation(fields: [courseId], references: [id], onDelete: Restrict)
+  createdBy User          @relation("ExamCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  questions Question[]
+  attempts  ExamAttempt[]
+
+  @@index([courseId])
+  @@index([createdById])
+  @@index([status, startAt, endAt])
+  @@map("exams")
+}
+
+model Question {
+  id            String   @id @default(cuid())
+  examId        String
+  typeId        String
+  prompt        String
+  points        Int      @default(1)
+  position      Int
+  isRequired    Boolean  @default(true)
+  gradingConfig Json?
+  createdAt     DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime @updatedAt @db.Timestamptz(3)
+
+  exam    Exam             @relation(fields: [examId], references: [id], onDelete: Cascade)
+  type    QuestionType     @relation(fields: [typeId], references: [id], onDelete: Restrict)
+  options QuestionOption[]
+  answers Answer[]
+
+  @@unique([examId, position])
+  @@index([typeId])
+  @@map("questions")
+}
+
+model QuestionOption {
+  id         String   @id @default(cuid())
+  questionId String
+  text       String
+  isCorrect  Boolean  @default(false)
+  position   Int
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+
+  question   Question          @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  selections AnswerSelection[]
+
+  @@unique([questionId, position])
+  @@index([questionId])
+  @@map("question_options")
+}
+
+model ExamAttempt {
+  id             String        @id @default(cuid())
+  examId         String
+  studentId      String
+  attemptNumber  Int           @default(1)
+  status         AttemptStatus @default(IN_PROGRESS)
+  startedAt      DateTime      @default(now()) @db.Timestamptz(3)
+  expiresAt      DateTime      @db.Timestamptz(3)
+  submittedAt    DateTime?     @db.Timestamptz(3)
+  lastActivityAt DateTime      @default(now()) @db.Timestamptz(3)
+  score          Int?
+  maxScore       Int?
+  percentage     Float?
+  feedback       String?
+  gradedById     String?
+  gradedAt       DateTime?     @db.Timestamptz(3)
+  version        Int           @default(1)
+  createdAt      DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime      @updatedAt @db.Timestamptz(3)
+
+  exam     Exam     @relation(fields: [examId], references: [id], onDelete: Restrict)
+  student  User     @relation("StudentAttempts", fields: [studentId], references: [id], onDelete: Restrict)
+  gradedBy User?    @relation("AttemptGrader", fields: [gradedById], references: [id], onDelete: SetNull)
+  answers  Answer[]
+
+  @@unique([examId, studentId, attemptNumber])
+  @@index([examId, status])
+  @@index([studentId, status])
+  @@index([expiresAt])
+  @@map("exam_attempts")
+}
+
+model Answer {
+  id            String   @id @default(cuid())
+  attemptId     String
+  questionId    String
+  textValue     String?
+  numericValue  Decimal? @db.Decimal(18, 4)
+  booleanValue  Boolean?
+  awardedPoints Int?
+  feedback      String?
+  isAutoGraded  Boolean  @default(false)
+  version       Int      @default(1)
+  createdAt     DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime @updatedAt @db.Timestamptz(3)
+
+  attempt    ExamAttempt       @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question   Question          @relation(fields: [questionId], references: [id], onDelete: Restrict)
+  selections AnswerSelection[]
+
+  @@unique([attemptId, questionId])
+  @@index([questionId])
+  @@map("answers")
+}
+
+model AnswerSelection {
+  id       String @id @default(cuid())
+  answerId String
+  optionId String
+
+  answer Answer         @relation(fields: [answerId], references: [id], onDelete: Cascade)
+  option QuestionOption @relation(fields: [optionId], references: [id], onDelete: Restrict)
+
+  @@unique([answerId, optionId])
+  @@index([optionId])
+  @@map("answer_selections")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  metadata  Json?
+  readAt    DateTime?        @db.Timestamptz(3)
+  createdAt DateTime         @default(now()) @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  action     String
+  entityType String
+  entityId   String?
+  metadata   Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+
+  actor User? @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([actorId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
