@@ -14,6 +14,7 @@ import {
   createQuestionSchema,
   updateQuestionSchema,
 } from '../questions/question.schemas.js';
+import { publishExamController } from './exam-publication.controller.js';
 import {
   createExamController,
   deleteManagedExamController,
@@ -51,6 +52,11 @@ lecturerExamRouter
     validateBody(createExamSchema),
     createExamController,
   );
+
+lecturerExamRouter.post(
+  '/exams/:examId/publish',
+  publishExamController,
+);
 
 lecturerExamRouter
   .route('/exams/:examId')
