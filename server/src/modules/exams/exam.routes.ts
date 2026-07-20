@@ -6,10 +6,16 @@ import { authorize } from '../../middleware/authorize.js';
 import { validateBody } from '../../middleware/validate-body.js';
 import {
   createExamController,
+  deleteManagedExamController,
+  getManagedExamController,
   listAvailableCoursesController,
   listManagedExamsController,
+  updateManagedExamController,
 } from './exam.controller.js';
-import { createExamSchema } from './exam.schemas.js';
+import {
+  createExamSchema,
+  updateExamSchema,
+} from './exam.schemas.js';
 
 export const lecturerExamRouter = Router();
 
@@ -30,3 +36,12 @@ lecturerExamRouter
     validateBody(createExamSchema),
     createExamController,
   );
+
+lecturerExamRouter
+  .route('/exams/:examId')
+  .get(getManagedExamController)
+  .patch(
+    validateBody(updateExamSchema),
+    updateManagedExamController,
+  )
+  .delete(deleteManagedExamController);

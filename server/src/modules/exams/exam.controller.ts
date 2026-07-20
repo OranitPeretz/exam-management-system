@@ -4,11 +4,17 @@ import type {
 } from 'express';
 
 import { AppError } from '../../errors/app-error.js';
-import type { CreateExamInput } from './exam.schemas.js';
+import type {
+  CreateExamInput,
+  UpdateExamInput,
+} from './exam.schemas.js';
 import {
   createExam,
+  deleteManagedExam,
+  getManagedExamDetails,
   listAvailableCourses,
   listManagedExams,
+  updateManagedExam,
   type AuthenticatedActor,
 } from './exam.service.js';
 
@@ -24,6 +30,23 @@ function getAuthenticatedActor(
   }
 
   return request.auth;
+}
+
+function getExamId(request: Request): string {
+  const examId = request.params.examId;
+
+  if (
+    typeof examId !== 'string' ||
+    examId.trim().length === 0
+  ) {
+    throw new AppError(
+      400,
+      'EXAM_ID_REQUIRED',
+      'A valid exam ID is required.',
+    );
+  }
+
+  return examId.trim();
 }
 
 export const listAvailableCoursesController: RequestHandler =
@@ -77,3 +100,64 @@ export const createExamController: RequestHandler = async (
     next(error);
   }
 };
+
+export const getManagedExamController: RequestHandler = async (
+  request,
+  response,
+  next,
+) => {
+  try {
+    const actor = getAuthenticatedActor(request);
+    const examId = getExamId(request);
+
+    const exam = await getManagedExamDetails(
+      actor,
+      examId,
+    );
+
+    response.status(200).json({
+      data: {
+        exam,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateManagedExamController: RequestHandler =
+  async (request, response, next) => {
+    try {
+      const actor = getAuthenticatedActor(request);
+      const examId = getExamId(request);
+      const input = request.body as UpdateExamInput;
+
+      const exam = await updateManagedExam(
+        actor,
+        examId,
+        input,
+      );
+
+      response.status(200).json({
+        data: {
+          exam,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+export const deleteManagedExamController: RequestHandler =
+  async (request, response, next) => {
+    try {
+      const actor = getAuthenticatedActor(request);
+      const examId = getExamId(request);
+
+      await deleteManagedExam(actor, examId);
+
+      response.status(204).send();
+    } catch (error) {
+      next(error);
+    }
+  };
