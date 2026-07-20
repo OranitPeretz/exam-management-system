@@ -8,6 +8,7 @@ import { prisma } from './database/prisma.js';
 import { errorHandler } from './middleware/error-handler.js';
 import { notFoundHandler } from './middleware/not-found.js';
 import { authRouter } from './modules/auth/auth.routes.js';
+import { lecturerExamRouter } from './modules/exams/exam.routes.js';
 
 const app = express();
 
@@ -47,6 +48,7 @@ app.get('/api/v1/health', async (_request, response, next) => {
 });
 
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/lecturer', lecturerExamRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
