@@ -5,6 +5,11 @@ import { authenticate } from '../../middleware/authenticate.js';
 import { authorize } from '../../middleware/authorize.js';
 import { validateBody } from '../../middleware/validate-body.js';
 import {
+  createQuestionController,
+  listQuestionTypesController,
+} from '../questions/question.controller.js';
+import { createQuestionSchema } from '../questions/question.schemas.js';
+import {
   createExamController,
   deleteManagedExamController,
   getManagedExamController,
@@ -29,6 +34,11 @@ lecturerExamRouter.get(
   listAvailableCoursesController,
 );
 
+lecturerExamRouter.get(
+  '/question-types',
+  listQuestionTypesController,
+);
+
 lecturerExamRouter
   .route('/exams')
   .get(listManagedExamsController)
@@ -45,3 +55,9 @@ lecturerExamRouter
     updateManagedExamController,
   )
   .delete(deleteManagedExamController);
+
+lecturerExamRouter.post(
+  '/exams/:examId/questions',
+  validateBody(createQuestionSchema),
+  createQuestionController,
+);
