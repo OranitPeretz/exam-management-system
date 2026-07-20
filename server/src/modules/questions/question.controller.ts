@@ -5,10 +5,15 @@ import type {
 
 import { AppError } from '../../errors/app-error.js';
 import type { AuthenticatedActor } from '../exams/exam.service.js';
-import type { CreateQuestionInput } from './question.schemas.js';
+import type {
+  CreateQuestionInput,
+  UpdateQuestionInput,
+} from './question.schemas.js';
 import {
   createQuestion,
+  deleteQuestion,
   listQuestionTypes,
+  updateQuestion,
 } from './question.service.js';
 
 function getAuthenticatedActor(
@@ -25,21 +30,24 @@ function getAuthenticatedActor(
   return request.auth;
 }
 
-function getExamId(request: Request): string {
-  const examId = request.params.examId;
+function getRequiredParameter(
+  request: Request,
+  parameterName: string,
+): string {
+  const value = request.params[parameterName];
 
   if (
-    typeof examId !== 'string' ||
-    examId.trim().length === 0
+    typeof value !== 'string' ||
+    value.trim().length === 0
   ) {
     throw new AppError(
       400,
-      'EXAM_ID_REQUIRED',
-      'A valid exam ID is required.',
+      'ROUTE_PARAMETER_REQUIRED',
+      `A valid ${parameterName} is required.`,
     );
   }
 
-  return examId.trim();
+  return value.trim();
 }
 
 export const listQuestionTypesController: RequestHandler =
@@ -64,7 +72,7 @@ export const createQuestionController: RequestHandler = async (
 ) => {
   try {
     const actor = getAuthenticatedActor(request);
-    const examId = getExamId(request);
+    const examId = getRequiredParameter(request, 'examId');
     const input = request.body as CreateQuestionInput;
 
     const question = await createQuestion(
@@ -78,6 +86,58 @@ export const createQuestionController: RequestHandler = async (
         question,
       },
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateQuestionController: RequestHandler = async (
+  request,
+  response,
+  next,
+) => {
+  try {
+    const actor = getAuthenticatedActor(request);
+    const examId = getRequiredParameter(request, 'examId');
+    const questionId = getRequiredParameter(
+      request,
+      'questionId',
+    );
+    const input = request.body as UpdateQuestionInput;
+
+    const question = await updateQuestion(
+      actor,
+      examId,
+      questionId,
+      input,
+    );
+
+    response.status(200).json({
+      data: {
+        question,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteQuestionController: RequestHandler = async (
+  request,
+  response,
+  next,
+) => {
+  try {
+    const actor = getAuthenticatedActor(request);
+    const examId = getRequiredParameter(request, 'examId');
+    const questionId = getRequiredParameter(
+      request,
+      'questionId',
+    );
+
+    await deleteQuestion(actor, examId, questionId);
+
+    response.status(204).send();
   } catch (error) {
     next(error);
   }

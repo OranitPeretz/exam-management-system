@@ -6,9 +6,14 @@ import { authorize } from '../../middleware/authorize.js';
 import { validateBody } from '../../middleware/validate-body.js';
 import {
   createQuestionController,
+  deleteQuestionController,
   listQuestionTypesController,
+  updateQuestionController,
 } from '../questions/question.controller.js';
-import { createQuestionSchema } from '../questions/question.schemas.js';
+import {
+  createQuestionSchema,
+  updateQuestionSchema,
+} from '../questions/question.schemas.js';
 import {
   createExamController,
   deleteManagedExamController,
@@ -61,3 +66,11 @@ lecturerExamRouter.post(
   validateBody(createQuestionSchema),
   createQuestionController,
 );
+
+lecturerExamRouter
+  .route('/exams/:examId/questions/:questionId')
+  .put(
+    validateBody(updateQuestionSchema),
+    updateQuestionController,
+  )
+  .delete(deleteQuestionController);
