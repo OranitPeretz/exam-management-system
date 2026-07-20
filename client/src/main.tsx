@@ -12,6 +12,7 @@ import { BrowserRouter } from 'react-router';
 import App from './App';
 import './index.css';
 import { appTheme } from './theme/theme';
+import { AuthProvider } from './features/auth/auth-provider';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,7 +30,9 @@ createRoot(document.getElementById('root')!).render(
       <CssBaseline />
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <App />
+          <AuthProvider>
+            <App />
+          </AuthProvider>
         </BrowserRouter>
       </QueryClientProvider>
     </ThemeProvider>
