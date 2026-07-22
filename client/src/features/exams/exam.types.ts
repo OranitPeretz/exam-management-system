@@ -6,6 +6,14 @@ export type ExamStatus =
   | 'RESULTS_PUBLISHED'
   | 'ARCHIVED';
 
+export type QuestionTypeCode =
+  | 'SINGLE_CHOICE'
+  | 'MULTIPLE_CHOICE'
+  | 'TRUE_FALSE'
+  | 'SHORT_TEXT'
+  | 'LONG_TEXT'
+  | 'NUMERIC';
+
 export interface ManagedExamSummary {
   id: string;
   courseId: string;
@@ -42,6 +50,40 @@ export interface ManagedExamSummary {
     questions: number;
     attempts: number;
   };
+}
+
+export interface ManagedQuestionOption {
+  id: string;
+  questionId: string;
+  text: string;
+  isCorrect: boolean;
+  position: number;
+  createdAt: string;
+}
+
+export interface ManagedQuestion {
+  id: string;
+  examId: string;
+  typeId: string;
+  prompt: string;
+  points: number;
+  position: number;
+  isRequired: boolean;
+  gradingConfig: unknown;
+  createdAt: string;
+  updatedAt: string;
+  type: {
+    id: string;
+    code: QuestionTypeCode;
+    name: string;
+    isAutoGradable: boolean;
+  };
+  options: ManagedQuestionOption[];
+}
+
+export interface ManagedExamDetails
+  extends ManagedExamSummary {
+  questions: ManagedQuestion[];
 }
 
 export interface LecturerCourse {
@@ -81,6 +123,12 @@ export interface CreateExamInput {
 export interface ManagedExamsResponse {
   data: {
     exams: ManagedExamSummary[];
+  };
+}
+
+export interface ManagedExamResponse {
+  data: {
+    exam: ManagedExamDetails;
   };
 }
 

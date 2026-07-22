@@ -4,6 +4,8 @@ import type {
   CreateExamResponse,
   LecturerCourse,
   LecturerCoursesResponse,
+  ManagedExamDetails,
+  ManagedExamResponse,
   ManagedExamSummary,
   ManagedExamsResponse,
 } from './exam.types';
@@ -16,6 +18,16 @@ export async function getManagedExams(): Promise<
   );
 
   return response.data.data.exams;
+}
+
+export async function getManagedExam(
+  examId: string,
+): Promise<ManagedExamDetails> {
+  const response = await httpClient.get<ManagedExamResponse>(
+    `/lecturer/exams/${examId}`,
+  );
+
+  return response.data.data.exam;
 }
 
 export async function getLecturerCourses(): Promise<

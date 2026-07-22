@@ -11,6 +11,7 @@ import {
   Route,
   Routes,
 } from 'react-router';
+
 import { LoginPage } from './features/auth/login-page';
 import { DashboardPage } from './pages/dashboard-page';
 import {
@@ -21,6 +22,13 @@ import {
 
 const LecturerExamsPage = lazy(
   () => import('./features/exams/lecturer-exams-page'),
+);
+
+const LecturerExamDetailsPage = lazy(
+  () =>
+    import(
+      './features/exams/lecturer-exam-details-page'
+    ),
 );
 
 function RouteLoader() {
@@ -61,6 +69,11 @@ function App() {
             <Route
               path="/lecturer/exams"
               element={<LecturerExamsPage />}
+            />
+
+            <Route
+              path="/lecturer/exams/:examId"
+              element={<LecturerExamDetailsPage />}
             />
           </Route>
         </Route>

@@ -161,9 +161,13 @@ function SummaryCard({
 
 interface ExamCardProps {
     exam: ManagedExamSummary;
+    onManage: (examId: string) => void;
 }
 
-function ExamCard({ exam }: ExamCardProps) {
+function ExamCard({
+    exam,
+    onManage,
+}: ExamCardProps) {
     const status = statusConfiguration[exam.status];
 
     return (
@@ -287,6 +291,12 @@ function ExamCard({ exam }: ExamCardProps) {
                             {formatDate(exam.startAt)} — {formatDate(exam.endAt)}
                         </Typography>
                     </Box>
+                    <Button
+                        variant="outlined"
+                        onClick={() => onManage(exam.id)}
+                    >
+                        Manage exam
+                    </Button>
                 </Stack>
             </CardContent>
         </Card>
@@ -483,7 +493,13 @@ export default function LecturerExamsPage() {
                     {!isLoading && !error && exams.length > 0 && (
                         <Stack spacing={2}>
                             {exams.map((exam) => (
-                                <ExamCard key={exam.id} exam={exam} />
+                                <ExamCard
+                                    key={exam.id}
+                                    exam={exam}
+                                    onManage={(examId) =>
+                                        navigate(`/lecturer/exams/${examId}`)
+                                    }
+                                />
                             ))}
                         </Stack>
                     )}
