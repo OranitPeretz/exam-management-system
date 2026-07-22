@@ -2,12 +2,17 @@ import { httpClient } from '../../api/http-client';
 import type {
   CreateExamInput,
   CreateExamResponse,
+  CreateQuestionInput,
+  CreateQuestionResponse,
   LecturerCourse,
   LecturerCoursesResponse,
   ManagedExamDetails,
   ManagedExamResponse,
   ManagedExamSummary,
   ManagedExamsResponse,
+  ManagedQuestion,
+  QuestionType,
+  QuestionTypesResponse,
 } from './exam.types';
 
 export async function getManagedExams(): Promise<
@@ -41,6 +46,17 @@ export async function getLecturerCourses(): Promise<
   return response.data.data.courses;
 }
 
+export async function getQuestionTypes(): Promise<
+  QuestionType[]
+> {
+  const response =
+    await httpClient.get<QuestionTypesResponse>(
+      '/lecturer/question-types',
+    );
+
+  return response.data.data.questionTypes;
+}
+
 export async function createExam(
   input: CreateExamInput,
 ): Promise<ManagedExamSummary> {
@@ -50,4 +66,17 @@ export async function createExam(
   );
 
   return response.data.data.exam;
+}
+
+export async function createQuestion(
+  examId: string,
+  input: CreateQuestionInput,
+): Promise<ManagedQuestion> {
+  const response =
+    await httpClient.post<CreateQuestionResponse>(
+      `/lecturer/exams/${examId}/questions`,
+      input,
+    );
+
+  return response.data.data.question;
 }

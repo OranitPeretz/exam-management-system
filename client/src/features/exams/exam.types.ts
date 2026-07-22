@@ -106,6 +106,14 @@ export interface LecturerCourse {
   };
 }
 
+export interface QuestionType {
+  id: string;
+  code: QuestionTypeCode;
+  name: string;
+  description: string | null;
+  isAutoGradable: boolean;
+}
+
 export interface CreateExamInput {
   courseId: string;
   title: string;
@@ -118,6 +126,21 @@ export interface CreateExamInput {
   passingPercentage: number;
   shuffleQuestions: boolean;
   showFeedback: boolean;
+}
+
+export interface CreateQuestionOptionInput {
+  text: string;
+  isCorrect: boolean;
+}
+
+export interface CreateQuestionInput {
+  typeCode: QuestionTypeCode;
+  prompt: string;
+  points: number;
+  isRequired: boolean;
+  options?: CreateQuestionOptionInput[];
+  correctNumericAnswer?: number;
+  numericTolerance?: number;
 }
 
 export interface ManagedExamsResponse {
@@ -138,8 +161,20 @@ export interface LecturerCoursesResponse {
   };
 }
 
+export interface QuestionTypesResponse {
+  data: {
+    questionTypes: QuestionType[];
+  };
+}
+
 export interface CreateExamResponse {
   data: {
     exam: ManagedExamSummary;
+  };
+}
+
+export interface CreateQuestionResponse {
+  data: {
+    question: ManagedQuestion;
   };
 }
