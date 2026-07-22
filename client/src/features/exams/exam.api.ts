@@ -80,3 +80,26 @@ export async function createQuestion(
 
   return response.data.data.question;
 }
+
+export async function deleteQuestion(
+  examId: string,
+  questionId: string,
+): Promise<void> {
+  await httpClient.delete(
+    `/lecturer/exams/${examId}/questions/${questionId}`,
+  );
+}
+
+export async function updateQuestion(
+  examId: string,
+  questionId: string,
+  input: CreateQuestionInput,
+): Promise<ManagedQuestion> {
+  const response =
+    await httpClient.put<CreateQuestionResponse>(
+      `/lecturer/exams/${examId}/questions/${questionId}`,
+      input,
+    );
+
+  return response.data.data.question;
+}

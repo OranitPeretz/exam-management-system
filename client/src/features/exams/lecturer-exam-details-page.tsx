@@ -33,7 +33,11 @@ import {
 import { useAuth } from '../auth/use-auth';
 import { getManagedExam } from './exam.api';
 import type { ExamStatus } from './exam.types';
-import { AddQuestionButton } from './add-question-button';
+import {
+    AddQuestionButton,
+    EditQuestionButton,
+} from './add-question-button';
+import { DeleteQuestionButton } from './delete-question-button';
 
 type StatusColor =
     | 'default'
@@ -518,8 +522,8 @@ export default function LecturerExamDetailsPage() {
 
                                             <Chip
                                                 label={`${question.points} ${question.points === 1
-                                                        ? 'point'
-                                                        : 'points'
+                                                    ? 'point'
+                                                    : 'points'
                                                     }`}
                                                 size="small"
                                             />
@@ -538,6 +542,18 @@ export default function LecturerExamDetailsPage() {
                                                 }
                                                 variant="outlined"
                                             />
+                                            {exam.status === 'DRAFT' && (
+                                                <EditQuestionButton
+                                                    examId={exam.id}
+                                                    question={question}
+                                                />
+                                            )}
+                                            {exam.status === 'DRAFT' && (
+                                                <DeleteQuestionButton
+                                                    examId={exam.id}
+                                                    question={question}
+                                                />
+                                            )}
                                         </Stack>
 
                                         <Typography
