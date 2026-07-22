@@ -38,6 +38,7 @@ import {
     EditQuestionButton,
 } from './add-question-button';
 import { DeleteQuestionButton } from './delete-question-button';
+import { PublishExamButton } from './publish-exam-button';
 
 type StatusColor =
     | 'default'
@@ -276,14 +277,30 @@ export default function LecturerExamDetailsPage() {
                                             </Typography>
                                         </Box>
 
-                                        <Chip
-                                            label={
-                                                statusConfiguration[exam.status].label
-                                            }
-                                            color={
-                                                statusConfiguration[exam.status].color
-                                            }
-                                        />
+                                        <Stack
+                                            direction={{
+                                                xs: 'column',
+                                                sm: 'row',
+                                            }}
+                                            spacing={1}
+                                            sx={{
+                                                alignItems: {
+                                                    xs: 'stretch',
+                                                    sm: 'center',
+                                                },
+                                            }}
+                                        >
+                                            <PublishExamButton exam={exam} />
+
+                                            <Chip
+                                                label={
+                                                    statusConfiguration[exam.status].label
+                                                }
+                                                color={
+                                                    statusConfiguration[exam.status].color
+                                                }
+                                            />
+                                        </Stack>
                                     </Stack>
 
                                     {exam.description && (

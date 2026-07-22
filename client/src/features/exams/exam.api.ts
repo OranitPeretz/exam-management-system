@@ -103,3 +103,14 @@ export async function updateQuestion(
 
   return response.data.data.question;
 }
+
+export async function publishExam(
+  examId: string,
+): Promise<ManagedExamDetails> {
+  const response =
+    await httpClient.post<ManagedExamResponse>(
+      `/lecturer/exams/${examId}/publish`,
+    );
+
+  return response.data.data.exam;
+}
