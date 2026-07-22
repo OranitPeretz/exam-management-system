@@ -8,6 +8,7 @@ import { saveStudentAnswerController } from './student-answer.controller.js';
 import { saveStudentAnswerSchema } from './student-answer.schemas.js';
 import { startOrResumeAttemptController } from './student-attempt.controller.js';
 import { listStudentExamsController } from './student-exam.controller.js';
+import { submitStudentAttemptController } from './student-submission.controller.js';
 
 export const studentExamRouter = Router();
 
@@ -30,4 +31,9 @@ studentExamRouter.put(
   '/attempts/:attemptId/answers/:questionId',
   validateBody(saveStudentAnswerSchema),
   saveStudentAnswerController,
+);
+
+studentExamRouter.post(
+  '/attempts/:attemptId/submit',
+  submitStudentAttemptController,
 );
