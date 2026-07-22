@@ -44,8 +44,54 @@ export interface ManagedExamSummary {
   };
 }
 
+export interface LecturerCourse {
+  id: string;
+  code: string;
+  name: string;
+  description: string | null;
+  lecturerId: string;
+  createdAt: string;
+  updatedAt: string;
+  lecturer: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+  _count: {
+    enrollments: number;
+    exams: number;
+  };
+}
+
+export interface CreateExamInput {
+  courseId: string;
+  title: string;
+  description?: string;
+  instructions?: string;
+  startAt?: string;
+  endAt?: string;
+  durationMinutes: number;
+  maxAttempts: number;
+  passingPercentage: number;
+  shuffleQuestions: boolean;
+  showFeedback: boolean;
+}
+
 export interface ManagedExamsResponse {
   data: {
     exams: ManagedExamSummary[];
+  };
+}
+
+export interface LecturerCoursesResponse {
+  data: {
+    courses: LecturerCourse[];
+  };
+}
+
+export interface CreateExamResponse {
+  data: {
+    exam: ManagedExamSummary;
   };
 }
