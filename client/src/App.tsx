@@ -1,22 +1,85 @@
-import { Navigate, Route, Routes } from 'react-router';
+import {
+  lazy,
+  Suspense,
+} from 'react';
+import {
+  Box,
+  CircularProgress,
+} from '@mui/material';
+import {
+  Navigate,
+  Route,
+  Routes,
+} from 'react-router';
 import { LoginPage } from './features/auth/login-page';
 import { DashboardPage } from './pages/dashboard-page';
-import { GuestRoute, ProtectedRoute } from './routes/auth-routes';
+import {
+  GuestRoute,
+  ProtectedRoute,
+  RoleRoute,
+} from './routes/auth-routes';
+
+const LecturerExamsPage = lazy(
+  () => import('./features/exams/lecturer-exams-page'),
+);
+
+function RouteLoader() {
+  return (
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'grid',
+        placeItems: 'center',
+      }}
+    >
+      <CircularProgress aria-label="Loading page" />
+    </Box>
+  );
+}
 
 function App() {
   return (
-    <Routes>
-      <Route element={<GuestRoute />}>
-        <Route path="/login" element={<LoginPage />} />
-      </Route>
+    <Suspense fallback={<RouteLoader />}>
+      <Routes>
+        <Route element={<GuestRoute />}>
+          <Route path="/login" element={<LoginPage />} />
+        </Route>
 
-      <Route element={<ProtectedRoute />}>
-        <Route path="/dashboard" element={<DashboardPage />} />
-      </Route>
+        <Route element={<ProtectedRoute />}>
+          <Route
+            path="/dashboard"
+            element={<DashboardPage />}
+          />
 
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
-    </Routes>
+          <Route
+            element={
+              <RoleRoute
+                allowedRoles={['LECTURER', 'ADMIN']}
+              />
+            }
+          >
+            <Route
+              path="/lecturer/exams"
+              element={<LecturerExamsPage />}
+            />
+          </Route>
+        </Route>
+
+        <Route
+          path="/"
+          element={
+            <Navigate to="/dashboard" replace />
+          }
+        />
+
+        <Route
+          path="*"
+          element={
+            <Navigate to="/dashboard" replace />
+          }
+        />
+      </Routes>
+    </Suspense>
   );
 }
 
