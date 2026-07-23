@@ -31,6 +31,8 @@ import {
   createExamSchema,
   updateExamSchema,
 } from './exam.schemas.js';
+import { gradeSubmissionController } from '../submissions/grading.controller.js';
+import { gradeSubmissionSchema } from '../submissions/grading.schemas.js';
 
 export const lecturerExamRouter = Router();
 
@@ -65,6 +67,12 @@ lecturerExamRouter.get(
 lecturerExamRouter.get(
   '/attempts/:attemptId',
   getSubmissionDetailsController,
+);
+
+lecturerExamRouter.put(
+  '/attempts/:attemptId/grade',
+  validateBody(gradeSubmissionSchema),
+  gradeSubmissionController,
 );
 
 lecturerExamRouter.post(
