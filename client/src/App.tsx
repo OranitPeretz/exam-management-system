@@ -21,7 +21,10 @@ import {
 } from './routes/auth-routes';
 
 const LecturerExamsPage = lazy(
-  () => import('./features/exams/lecturer-exams-page'),
+  () =>
+    import(
+      './features/exams/lecturer-exams-page'
+    ),
 );
 
 const LecturerExamDetailsPage = lazy(
@@ -52,6 +55,13 @@ const StudentResultsPage = lazy(
     ),
 );
 
+const StudentResultDetailsPage = lazy(
+  () =>
+    import(
+      './features/student-exams/student-result-details-page'
+    ),
+);
+
 function RouteLoader() {
   return (
     <Box
@@ -71,7 +81,10 @@ function App() {
     <Suspense fallback={<RouteLoader />}>
       <Routes>
         <Route element={<GuestRoute />}>
-          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/login"
+            element={<LoginPage />}
+          />
         </Route>
 
         <Route element={<ProtectedRoute />}>
@@ -83,7 +96,10 @@ function App() {
           <Route
             element={
               <RoleRoute
-                allowedRoles={['LECTURER', 'ADMIN']}
+                allowedRoles={[
+                  'LECTURER',
+                  'ADMIN',
+                ]}
               />
             }
           >
@@ -94,7 +110,9 @@ function App() {
 
             <Route
               path="/lecturer/exams/:examId"
-              element={<LecturerExamDetailsPage />}
+              element={
+                <LecturerExamDetailsPage />
+              }
             />
           </Route>
 
@@ -109,13 +127,24 @@ function App() {
               path="/student/exams"
               element={<StudentExamsPage />}
             />
+
             <Route
               path="/student/exams/:examId/take"
-              element={<StudentExamTakingPage />}
+              element={
+                <StudentExamTakingPage />
+              }
             />
+
             <Route
               path="/student/results"
               element={<StudentResultsPage />}
+            />
+
+            <Route
+              path="/student/results/:attemptId"
+              element={
+                <StudentResultDetailsPage />
+              }
             />
           </Route>
         </Route>
@@ -123,14 +152,20 @@ function App() {
         <Route
           path="/"
           element={
-            <Navigate to="/dashboard" replace />
+            <Navigate
+              to="/dashboard"
+              replace
+            />
           }
         />
 
         <Route
           path="*"
           element={
-            <Navigate to="/dashboard" replace />
+            <Navigate
+              to="/dashboard"
+              replace
+            />
           }
         />
       </Routes>

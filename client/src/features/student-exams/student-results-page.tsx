@@ -5,6 +5,7 @@ import {
   CheckCircleOutlined,
   LogoutOutlined,
   RefreshOutlined,
+  VisibilityOutlined,
 } from '@mui/icons-material';
 import {
   Alert,
@@ -116,9 +117,13 @@ function SummaryCard({
 
 interface ResultCardProps {
   result: StudentResultSummary;
+  onViewDetails: (attemptId: string) => void;
 }
 
-function ResultCard({ result }: ResultCardProps) {
+function ResultCard({
+  result,
+  onViewDetails,
+}: ResultCardProps) {
   const score = result.score ?? 0;
   const maxScore = result.maxScore ?? 0;
 
@@ -296,7 +301,9 @@ function ResultCard({ result }: ResultCardProps) {
           {result.feedbackAvailable &&
             result.feedback && (
               <Alert severity="info">
-                <strong>Lecturer feedback:</strong>{' '}
+                <strong>
+                  Lecturer feedback:
+                </strong>{' '}
                 {result.feedback}
               </Alert>
             )}
@@ -307,6 +314,16 @@ function ResultCard({ result }: ResultCardProps) {
               exam.
             </Alert>
           )}
+
+          <Button
+            variant="outlined"
+            startIcon={<VisibilityOutlined />}
+            onClick={() =>
+              onViewDetails(result.attemptId)
+            }
+          >
+            View details
+          </Button>
         </Stack>
       </CardContent>
     </Card>
@@ -347,7 +364,9 @@ export default function StudentResultsPage() {
     try {
       await logout();
     } finally {
-      navigate('/login', { replace: true });
+      navigate('/login', {
+        replace: true,
+      });
     }
   };
 
@@ -406,7 +425,9 @@ export default function StudentResultsPage() {
           <Button
             color="inherit"
             startIcon={<LogoutOutlined />}
-            onClick={() => void handleLogout()}
+            onClick={() =>
+              void handleLogout()
+            }
           >
             Logout
           </Button>
@@ -507,6 +528,13 @@ export default function StudentResultsPage() {
                   <ResultCard
                     key={result.attemptId}
                     result={result}
+                    onViewDetails={(
+                      attemptId,
+                    ) =>
+                      navigate(
+                        `/student/results/${attemptId}`,
+                      )
+                    }
                   />
                 ))}
               </Stack>
