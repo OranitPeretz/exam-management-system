@@ -5,6 +5,7 @@ import type {
 
 import { AppError } from '../../errors/app-error.js';
 import {
+  getSubmissionDetails,
   listExamSubmissions,
   type AuthenticatedSubmissionActor,
 } from './submission.service.js';
@@ -23,32 +24,68 @@ function getAuthenticatedActor(
   return request.auth;
 }
 
-function getExamId(request: Request): string {
-  const examId = request.params.examId;
+function getRouteId(
+  request: Request,
+  parameterName: 'examId' | 'attemptId',
+  errorCode: string,
+  errorMessage: string,
+): string {
+  const value = request.params[parameterName];
 
   if (
-    typeof examId !== 'string' ||
-    examId.trim().length === 0
+    typeof value !== 'string' ||
+    value.trim().length === 0
   ) {
     throw new AppError(
       400,
-      'EXAM_ID_REQUIRED',
-      'A valid exam ID is required.',
+      errorCode,
+      errorMessage,
     );
   }
 
-  return examId.trim();
+  return value.trim();
 }
 
 export const listExamSubmissionsController: RequestHandler =
   async (request, response, next) => {
     try {
       const actor = getAuthenticatedActor(request);
-      const examId = getExamId(request);
+
+      const examId = getRouteId(
+        request,
+        'examId',
+        'EXAM_ID_REQUIRED',
+        'A valid exam ID is required.',
+      );
 
       const result = await listExamSubmissions(
         actor,
         examId,
+      );
+
+      response.status(200).json({
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+export const getSubmissionDetailsController: RequestHandler =
+  async (request, response, next) => {
+    try {
+      const actor = getAuthenticatedActor(request);
+
+      const attemptId = getRouteId(
+        request,
+        'attemptId',
+        'ATTEMPT_ID_REQUIRED',
+        'A valid attempt ID is required.',
+      );
+
+      const result = await getSubmissionDetails(
+        actor,
+        attemptId,
       );
 
       response.status(200).json({

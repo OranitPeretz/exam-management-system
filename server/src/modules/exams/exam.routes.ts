@@ -14,7 +14,10 @@ import {
   createQuestionSchema,
   updateQuestionSchema,
 } from '../questions/question.schemas.js';
-import { listExamSubmissionsController } from '../submissions/submission.controller.js';
+import {
+  getSubmissionDetailsController,
+  listExamSubmissionsController,
+} from '../submissions/submission.controller.js';
 import { publishExamController } from './exam-publication.controller.js';
 import {
   createExamController,
@@ -57,6 +60,11 @@ lecturerExamRouter
 lecturerExamRouter.get(
   '/exams/:examId/submissions',
   listExamSubmissionsController,
+);
+
+lecturerExamRouter.get(
+  '/attempts/:attemptId',
+  getSubmissionDetailsController,
 );
 
 lecturerExamRouter.post(
