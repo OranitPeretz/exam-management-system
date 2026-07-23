@@ -9,7 +9,10 @@ import { saveStudentAnswerSchema } from './student-answer.schemas.js';
 import { startOrResumeAttemptController } from './student-attempt.controller.js';
 import { listStudentExamsController } from './student-exam.controller.js';
 import { submitStudentAttemptController } from './student-submission.controller.js';
-import { listStudentResultsController } from './student-result.controller.js';
+import {
+  getStudentResultDetailsController,
+  listStudentResultsController,
+} from './student-result.controller.js';
 
 export const studentExamRouter = Router();
 
@@ -26,6 +29,11 @@ studentExamRouter.get(
 studentExamRouter.get(
   '/results',
   listStudentResultsController,
+);
+
+studentExamRouter.get(
+  '/results/:attemptId',
+  getStudentResultDetailsController,
 );
 
 studentExamRouter.post(
