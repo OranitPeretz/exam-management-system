@@ -33,6 +33,7 @@ import {
 } from './exam.schemas.js';
 import { gradeSubmissionController } from '../submissions/grading.controller.js';
 import { gradeSubmissionSchema } from '../submissions/grading.schemas.js';
+import { publishExamResultsController } from '../submissions/results-publication.controller.js';
 
 export const lecturerExamRouter = Router();
 
@@ -78,6 +79,11 @@ lecturerExamRouter.put(
 lecturerExamRouter.post(
   '/exams/:examId/publish',
   publishExamController,
+);
+
+lecturerExamRouter.post(
+  '/exams/:examId/results/publish',
+  publishExamResultsController,
 );
 
 lecturerExamRouter
