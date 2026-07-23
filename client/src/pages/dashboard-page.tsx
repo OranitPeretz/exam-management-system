@@ -158,15 +158,38 @@ export function DashboardPage() {
                                 </Button>
                             )}
                             {canViewStudentExams && (
-                                <Button
-                                    variant="contained"
-                                    sx={{ mt: 3 }}
-                                    onClick={() =>
-                                        navigate('/student/exams')
-                                    }
+                                <Stack
+                                    direction={{
+                                        xs: 'column',
+                                        sm: 'row',
+                                    }}
+                                    spacing={2}
+                                    sx={{
+                                        mt: 3,
+                                        alignItems: {
+                                            xs: 'stretch',
+                                            sm: 'center',
+                                        },
+                                    }}
                                 >
-                                    View my exams
-                                </Button>
+                                    <Button
+                                        variant="contained"
+                                        onClick={() =>
+                                            navigate('/student/exams')
+                                        }
+                                    >
+                                        View my exams
+                                    </Button>
+
+                                    <Button
+                                        variant="outlined"
+                                        onClick={() =>
+                                            navigate('/student/results')
+                                        }
+                                    >
+                                        View my results
+                                    </Button>
+                                </Stack>
                             )}
                         </CardContent>
                     </Card>

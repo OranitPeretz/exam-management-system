@@ -45,6 +45,13 @@ const StudentExamTakingPage = lazy(
     ),
 );
 
+const StudentResultsPage = lazy(
+  () =>
+    import(
+      './features/student-exams/student-results-page'
+    ),
+);
+
 function RouteLoader() {
   return (
     <Box
@@ -105,6 +112,10 @@ function App() {
             <Route
               path="/student/exams/:examId/take"
               element={<StudentExamTakingPage />}
+            />
+            <Route
+              path="/student/results"
+              element={<StudentResultsPage />}
             />
           </Route>
         </Route>
