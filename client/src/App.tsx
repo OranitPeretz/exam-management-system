@@ -41,6 +41,13 @@ const LecturerSubmissionsPage = lazy(
     ),
 );
 
+const LecturerSubmissionDetailsPage = lazy(
+  () =>
+    import(
+      './features/exams/lecturer-submission-details-page'
+    ),
+);
+
 const StudentExamsPage = lazy(
   () =>
     import(
@@ -126,6 +133,13 @@ function App() {
               path="/lecturer/exams/:examId/submissions"
               element={
                 <LecturerSubmissionsPage />
+              }
+            />
+
+            <Route
+              path="/lecturer/exams/:examId/submissions/:attemptId"
+              element={
+                <LecturerSubmissionDetailsPage />
               }
             />
           </Route>
