@@ -30,6 +30,7 @@ import {
 
 import { useAuth } from '../auth/use-auth';
 import { getLecturerSubmissionDetails } from './lecturer-submission.api';
+import { ManualGradingForm } from './manual-grading-form';
 import type {
     LecturerSubmissionQuestion,
     SubmissionStatus,
@@ -599,8 +600,8 @@ export default function LecturerSubmissionDetailsPage() {
 
                                             <Chip
                                                 label={`${question.points} ${question.points === 1
-                                                        ? 'point'
-                                                        : 'points'
+                                                    ? 'point'
+                                                    : 'points'
                                                     }`}
                                                 size="small"
                                             />
@@ -661,6 +662,11 @@ export default function LecturerSubmissionDetailsPage() {
                                 </CardContent>
                             </Card>
                         ))}
+                        <ManualGradingForm
+                            attemptId={data.submission.id}
+                            submission={data.submission}
+                            questions={data.questions}
+                        />
                     </Stack>
                 )}
             </Container>
