@@ -10,6 +10,7 @@ import { notFoundHandler } from './middleware/not-found.js';
 import { authRouter } from './modules/auth/auth.routes.js';
 import { lecturerExamRouter } from './modules/exams/exam.routes.js';
 import { studentExamRouter } from './modules/student-exams/student-exam.routes.js';
+import { adminRouter } from './modules/admin/admin.routes.js';
 
 const app = express();
 
@@ -49,6 +50,7 @@ app.get('/api/v1/health', async (_request, response, next) => {
 });
 
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/admin', adminRouter);
 app.use('/api/v1/lecturer', lecturerExamRouter);
 app.use('/api/v1/student', studentExamRouter);
 
