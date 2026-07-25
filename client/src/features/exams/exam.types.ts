@@ -178,3 +178,22 @@ export interface CreateQuestionResponse {
     question: ManagedQuestion;
   };
 }
+
+export interface PublishedResultsExam {
+  id: string;
+  title: string;
+  status: ExamStatus;
+  resultsPublishedAt: string;
+  version: number;
+}
+
+export interface PublishResultsData {
+  exam: PublishedResultsExam;
+  gradedAttempts: number;
+  notifiedStudents: number;
+  message: string;
+}
+
+export interface PublishResultsResponse {
+  data: PublishResultsData;
+}

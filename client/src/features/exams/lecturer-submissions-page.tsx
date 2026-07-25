@@ -35,6 +35,7 @@ import type {
     LecturerExamSubmission,
     SubmissionStatus,
 } from './lecturer-submission.types';
+import { PublishResultsButton } from './publish-results-button';
 
 type StatusColor =
     | 'default'
@@ -523,6 +524,16 @@ export default function LecturerSubmissionsPage() {
                                         icon={<AssignmentOutlined />}
                                         label={`${data.exam.totalPoints} total points`}
                                         variant="outlined"
+                                    />
+                                    <PublishResultsButton
+                                        examId={data.exam.id}
+                                        examStatus={data.exam.status}
+                                        totalSubmissions={
+                                            data.summary.totalSubmissions
+                                        }
+                                        waitingForGrading={
+                                            data.summary.waitingForGrading
+                                        }
                                     />
                                 </Stack>
                             </CardContent>

@@ -11,6 +11,8 @@ import type {
   ManagedExamSummary,
   ManagedExamsResponse,
   ManagedQuestion,
+  PublishResultsData,
+  PublishResultsResponse,
   QuestionType,
   QuestionTypesResponse,
 } from './exam.types';
@@ -113,4 +115,15 @@ export async function publishExam(
     );
 
   return response.data.data.exam;
+}
+
+export async function publishExamResults(
+  examId: string,
+): Promise<PublishResultsData> {
+  const response =
+    await httpClient.post<PublishResultsResponse>(
+      `/lecturer/exams/${examId}/results/publish`,
+    );
+
+  return response.data.data;
 }
