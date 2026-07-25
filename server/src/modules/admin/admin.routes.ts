@@ -6,39 +6,64 @@ import { authenticate } from '../../middleware/authenticate.js';
 import { authorize } from '../../middleware/authorize.js';
 import { validateBody } from '../../middleware/validate-body.js';
 import {
-  createManagedUserController,
-  listManagedUsersController,
+    createManagedUserController,
+    listManagedUsersController,
 } from './admin-user.controller.js';
 import {
-  createAdminUserSchema,
+    createAdminUserSchema,
 } from './admin-user.schemas.js';
+import {
+    createManagedCourseController,
+    enrollStudentController,
+    listManagedCoursesController,
+} from './admin-course.controller.js';
+import {
+    createAdminCourseSchema,
+    enrollStudentSchema,
+} from './admin-course.schemas.js';
 
 export const adminRouter = Router();
 
 const userCreationRateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  limit: 30,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: {
-    error: {
-      code: 'TOO_MANY_USER_CREATION_REQUESTS',
-      message:
-        'Too many user creation requests. Please try again later.',
+    windowMs: 15 * 60 * 1000,
+    limit: 30,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: {
+        error: {
+            code: 'TOO_MANY_USER_CREATION_REQUESTS',
+            message:
+                'Too many user creation requests. Please try again later.',
+        },
     },
-  },
 });
 
 adminRouter.use(
-  authenticate,
-  authorize(UserRole.ADMIN),
+    authenticate,
+    authorize(UserRole.ADMIN),
 );
 
 adminRouter
-  .route('/users')
-  .get(listManagedUsersController)
-  .post(
-    userCreationRateLimiter,
-    validateBody(createAdminUserSchema),
-    createManagedUserController,
-  );
+    .route('/users')
+    .get(listManagedUsersController)
+    .post(
+        userCreationRateLimiter,
+        validateBody(createAdminUserSchema),
+        createManagedUserController,
+    );
+
+adminRouter
+    .route('/courses')
+    .get(listManagedCoursesController)
+    .post(
+        validateBody(
+            createAdminCourseSchema,
+        ),
+        createManagedCourseController,
+    );
+
+adminRouter.post(
+    '/courses/:courseId/enrollments',
+    validateBody(enrollStudentSchema),
+    enrollStudentController,
+);
