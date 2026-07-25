@@ -292,6 +292,19 @@ export default function LecturerExamDetailsPage() {
                                         >
                                             <PublishExamButton exam={exam} />
 
+                                            {exam.status !== 'DRAFT' && (
+                                                <Button
+                                                    variant="outlined"
+                                                    onClick={() =>
+                                                        navigate(
+                                                            `/lecturer/exams/${exam.id}/submissions`,
+                                                        )
+                                                    }
+                                                >
+                                                    View submissions ({exam._count.attempts})
+                                                </Button>
+                                            )}
+
                                             <Chip
                                                 label={
                                                     statusConfiguration[exam.status].label
