@@ -38,6 +38,44 @@ ExamFlow is a full-stack academic exam management system that supports the compl
 - View published grades and lecturer feedback
 - Review answers and awarded points after result publication
 
+## Application Screenshots
+
+### Authentication
+
+Users access the system through the secure login page.
+
+![ExamFlow login page](docs/screenshots/login-page.png)
+
+### Academic Administration
+
+Administrators can create and manage student and lecturer accounts.
+
+![Administrator user management](docs/screenshots/admin-users.png)
+
+Administrators can manage courses, lecturer assignments and student enrollments.
+
+![Administrator course management](docs/screenshots/admin-courses.png)
+
+### Lecturer Exam Management
+
+Lecturers can create exams, configure questions and publish exams to enrolled students.
+
+![Lecturer exam management](docs/screenshots/lecturer-exam.png)
+
+Lecturers can review student answers, award points and provide feedback.
+
+![Lecturer grading workflow](docs/screenshots/lecturer-grading.png)
+
+### Student Examination
+
+Students can take available exams while their answers are saved securely.
+
+![Student exam-taking page](docs/screenshots/student-exam.png)
+
+After the lecturer publishes the results, students can review their grades, answers and feedback.
+
+![Student published results](docs/screenshots/student-results.png)
+
 ## Technology Stack
 
 | Layer | Technologies |
