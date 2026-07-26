@@ -1,8 +1,15 @@
 import { httpClient } from '../../api/http-client';
 import type {
+  CreateManagedCourseInput,
+  CreateManagedCourseResponse,
   CreateManagedUserInput,
   CreateManagedUserResponse,
+  EnrollStudentInput,
+  EnrollStudentResponse,
   ListManagedUsersParams,
+  ManagedCourse,
+  ManagedCoursesResponse,
+  ManagedEnrollment,
   ManagedUser,
   ManagedUsersData,
   ManagedUsersResponse,
@@ -32,4 +39,39 @@ export async function createManagedUser(
     );
 
   return response.data.data.user;
+}
+
+export async function getManagedCourses():
+  Promise<ManagedCourse[]> {
+  const response =
+    await httpClient.get<ManagedCoursesResponse>(
+      '/admin/courses',
+    );
+
+  return response.data.data.courses;
+}
+
+export async function createManagedCourse(
+  input: CreateManagedCourseInput,
+): Promise<ManagedCourse> {
+  const response =
+    await httpClient.post<CreateManagedCourseResponse>(
+      '/admin/courses',
+      input,
+    );
+
+  return response.data.data.course;
+}
+
+export async function enrollStudent(
+  courseId: string,
+  input: EnrollStudentInput,
+): Promise<ManagedEnrollment> {
+  const response =
+    await httpClient.post<EnrollStudentResponse>(
+      `/admin/courses/${courseId}/enrollments`,
+      input,
+    );
+
+  return response.data.data.enrollment;
 }

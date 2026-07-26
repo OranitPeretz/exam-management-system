@@ -83,6 +83,13 @@ const AdminUsersPage = lazy(
     ),
 );
 
+const AdminCoursesPage = lazy(
+  () =>
+    import(
+      './features/admin/admin-courses-page'
+    ),
+);
+
 function RouteLoader() {
   return (
     <Box
@@ -121,6 +128,10 @@ function App() {
             <Route
               path="/admin/users"
               element={<AdminUsersPage />}
+            />
+            <Route
+              path="/admin/courses"
+              element={<AdminCoursesPage />}
             />
           </Route>
 

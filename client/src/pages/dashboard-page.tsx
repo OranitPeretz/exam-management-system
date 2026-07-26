@@ -175,6 +175,17 @@ export function DashboardPage() {
                                         </Button>
                                     )}
 
+                                    {canManageUsers && (
+                                        <Button
+                                            variant="outlined"
+                                            onClick={() =>
+                                                navigate('/admin/courses')
+                                            }
+                                        >
+                                            Manage courses
+                                        </Button>
+                                    )}
+
                                     {canManageExams && (
                                         <Button
                                             variant={
