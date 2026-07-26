@@ -55,6 +55,13 @@ export const createAdminUserSchema = z
   })
   .strict();
 
+export const updateAdminUserStatusSchema =
+  z
+    .object({
+      isActive: z.boolean(),
+    })
+    .strict();
+
 export const listAdminUsersQuerySchema =
   z.object({
     search: z
@@ -84,6 +91,11 @@ export const listAdminUsersQuerySchema =
 
 export type CreateAdminUserInput =
   z.infer<typeof createAdminUserSchema>;
+
+export type UpdateAdminUserStatusInput =
+  z.infer<
+    typeof updateAdminUserStatusSchema
+  >;
 
 export type ListAdminUsersQuery =
   z.infer<

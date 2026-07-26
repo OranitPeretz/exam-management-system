@@ -8,9 +8,11 @@ import { validateBody } from '../../middleware/validate-body.js';
 import {
     createManagedUserController,
     listManagedUsersController,
+    updateManagedUserStatusController,
 } from './admin-user.controller.js';
 import {
     createAdminUserSchema,
+    updateAdminUserStatusSchema,
 } from './admin-user.schemas.js';
 import {
     createManagedCourseController,
@@ -51,6 +53,14 @@ adminRouter
         validateBody(createAdminUserSchema),
         createManagedUserController,
     );
+
+    adminRouter.patch(
+  '/users/:userId/status',
+  validateBody(
+    updateAdminUserStatusSchema,
+  ),
+  updateManagedUserStatusController,
+);
 
 adminRouter
     .route('/courses')

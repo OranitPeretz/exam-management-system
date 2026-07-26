@@ -220,3 +220,137 @@ export async function createManagedUser(
     throw error;
   }
 }
+export async function updateManagedUserStatus(
+  userId: string,
+  isActive: boolean,
+  adminId: string,
+  ipAddress?: string,
+): Promise<ManagedUser> {
+  const existingUser =
+    await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        isActive: true,
+      },
+    });
+
+  if (!existingUser) {
+    throw new AppError(
+      404,
+      'USER_NOT_FOUND',
+      'The selected user was not found.',
+    );
+  }
+
+  if (
+    existingUser.id === adminId &&
+    !isActive
+  ) {
+    throw new AppError(
+      409,
+      'CANNOT_DEACTIVATE_CURRENT_ADMIN',
+      'You cannot deactivate your own administrator account.',
+    );
+  }
+
+  if (existingUser.isActive === isActive) {
+    const unchangedUser =
+      await prisma.user.findUnique({
+        where: {
+          id: userId,
+        },
+        select: {
+          id: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          role: true,
+          isActive: true,
+          createdAt: true,
+          updatedAt: true,
+          _count: {
+            select: {
+              enrollments: true,
+              coursesTaught: true,
+            },
+          },
+        },
+      });
+
+    if (!unchangedUser) {
+      throw new AppError(
+        404,
+        'USER_NOT_FOUND',
+        'The selected user was not found.',
+      );
+    }
+
+    return unchangedUser;
+  }
+
+  return prisma.$transaction(
+    async (transaction) => {
+      const user =
+        await transaction.user.update({
+          where: {
+            id: userId,
+          },
+          data: {
+            isActive,
+          },
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+            role: true,
+            isActive: true,
+            createdAt: true,
+            updatedAt: true,
+            _count: {
+              select: {
+                enrollments: true,
+                coursesTaught: true,
+              },
+            },
+          },
+        });
+
+      if (!isActive) {
+        await transaction.refreshToken.updateMany({
+          where: {
+            userId,
+            revokedAt: null,
+          },
+          data: {
+            revokedAt: new Date(),
+          },
+        });
+      }
+
+      await transaction.auditLog.create({
+        data: {
+          actorId: adminId,
+          action: isActive
+            ? 'USER_REACTIVATED'
+            : 'USER_DEACTIVATED',
+          entityType: 'User',
+          entityId: user.id,
+          ipAddress: ipAddress ?? null,
+          metadata: {
+            email: user.email,
+            role: user.role,
+            isActive: user.isActive,
+          },
+        },
+      });
+
+      return user;
+    },
+  );
+}
