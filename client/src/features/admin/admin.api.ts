@@ -90,3 +90,15 @@ export async function updateManagedUserStatus(
 
   return response.data.data.user;
 }
+
+export async function dropStudentFromCourse(
+  courseId: string,
+  studentId: string,
+): Promise<ManagedEnrollment> {
+  const response =
+    await httpClient.delete<EnrollStudentResponse>(
+      `/admin/courses/${courseId}/enrollments/${studentId}`,
+    );
+
+  return response.data.data.enrollment;
+}
