@@ -1,4 +1,4 @@
-import { LogoutOutlined } from '@mui/icons-material';
+import LogoutOutlined from '@mui/icons-material/LogoutOutlined';
 import {
     AppBar,
     Avatar,

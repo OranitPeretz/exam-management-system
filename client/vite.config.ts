@@ -7,6 +7,8 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: './src/test/setup.ts',
+    fileParallelism: false,
+    testTimeout: 15000,
     environmentOptions: {
       jsdom: {
         url: 'http://localhost:5173',
