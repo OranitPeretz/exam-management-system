@@ -1,0 +1,92 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  server:
+    name: Server checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    defaults:
+      run:
+        working-directory: server
+
+    env:
+      NODE_ENV: test
+      PORT: "4000"
+      CLIENT_URL: http://localhost:5173
+      DATABASE_URL: postgresql://ci_user:ci_password@127.0.0.1:5432/examflow_ci
+      DIRECT_URL: postgresql://ci_user:ci_password@127.0.0.1:5432/examflow_ci
+      JWT_ACCESS_SECRET: ci-only-secret-that-is-at-least-sixty-four-characters-long-and-not-used-in-production
+      JWT_ACCESS_EXPIRES_IN: 15m
+      REFRESH_TOKEN_DAYS: "7"
+      REFRESH_COOKIE_NAME: examflow_refresh_token
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install server dependencies
+        run: npm ci
+
+      - name: Run server tests
+        run: npm test
+
+      - name: Type-check server
+        run: npm run typecheck
+
+      - name: Build server
+        run: npm run build
+
+  client:
+    name: Client checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    defaults:
+      run:
+        working-directory: client
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install client dependencies
+        run: npm ci
+
+      - name: Run client tests
+        run: npm test
+
+      - name: Lint client
+        run: npm run lint
+
+      - name: Build client
+        run: npm run build
