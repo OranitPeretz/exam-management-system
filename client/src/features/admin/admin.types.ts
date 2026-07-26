@@ -135,3 +135,13 @@ export interface EnrollStudentResponse {
     enrollment: ManagedEnrollment;
   };
 }
+
+export interface UpdateManagedUserStatusInput {
+  isActive: boolean;
+}
+
+export interface UpdateManagedUserStatusResponse {
+  data: {
+    user: ManagedUser;
+  };
+}

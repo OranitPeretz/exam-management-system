@@ -52,6 +52,7 @@ import type {
     CreateManagedUserInput,
     ManagedUser,
 } from './admin.types';
+import { ManagedUserStatusButton } from './managed-user-status-button';
 
 const initialForm: CreateManagedUserInput = {
     email: '',
@@ -236,6 +237,7 @@ function UserCard({ user }: UserCardProps) {
                             </Typography>
                         </Box>
                     </Box>
+                    <ManagedUserStatusButton user={user} />
                 </Stack>
             </CardContent>
         </Card>
