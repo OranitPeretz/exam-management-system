@@ -326,3 +326,107 @@ export async function enrollStudentInCourse(
     },
   );
 }
+
+export async function dropStudentFromCourse(
+  courseId: string,
+  studentId: string,
+  adminId: string,
+  ipAddress?: string,
+) {
+  const existingEnrollment =
+    await prisma.enrollment.findUnique({
+      where: {
+        courseId_studentId: {
+          courseId,
+          studentId,
+        },
+      },
+      include: {
+        course: {
+          select: {
+            id: true,
+            code: true,
+            name: true,
+          },
+        },
+        student: {
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+    });
+
+  if (!existingEnrollment) {
+    throw new AppError(
+      404,
+      'ENROLLMENT_NOT_FOUND',
+      'The student is not enrolled in this course.',
+    );
+  }
+
+  if (
+    existingEnrollment.status !==
+    EnrollmentStatus.ACTIVE
+  ) {
+    throw new AppError(
+      409,
+      'ENROLLMENT_NOT_ACTIVE',
+      'The student is not actively enrolled in this course.',
+    );
+  }
+
+  return prisma.$transaction(
+    async (transaction) => {
+      const enrollment =
+        await transaction.enrollment.update({
+          where: {
+            id: existingEnrollment.id,
+          },
+          data: {
+            status: EnrollmentStatus.DROPPED,
+          },
+          include: {
+            course: {
+              select: {
+                id: true,
+                code: true,
+                name: true,
+              },
+            },
+            student: {
+              select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        });
+
+      await transaction.auditLog.create({
+        data: {
+          actorId: adminId,
+          action: 'STUDENT_DROPPED',
+          entityType: 'Enrollment',
+          entityId: enrollment.id,
+          ipAddress: ipAddress ?? null,
+          metadata: {
+            courseId,
+            courseCode:
+              enrollment.course.code,
+            studentId,
+            studentEmail:
+              enrollment.student.email,
+          },
+        },
+      });
+
+      return enrollment;
+    },
+  );
+}

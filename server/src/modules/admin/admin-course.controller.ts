@@ -9,6 +9,7 @@ import type {
 } from './admin-course.schemas.js';
 import {
     createManagedCourse,
+    dropStudentFromCourse,
     enrollStudentInCourse,
     listManagedCourses,
 } from './admin-course.service.js';
@@ -117,3 +118,64 @@ export const enrollStudentController:
             next(error);
         }
     };
+
+    export const dropStudentEnrollmentController:
+  RequestHandler = async (
+    request,
+    response,
+    next,
+  ) => {
+    try {
+      if (!request.auth) {
+        throw new AppError(
+          401,
+          'AUTHENTICATION_REQUIRED',
+          'Authentication is required.',
+        );
+      }
+
+      const courseId =
+        request.params.courseId;
+
+      const studentId =
+        request.params.studentId;
+
+      if (
+        typeof courseId !== 'string' ||
+        courseId.trim().length === 0
+      ) {
+        throw new AppError(
+          400,
+          'COURSE_ID_REQUIRED',
+          'A valid course ID is required.',
+        );
+      }
+
+      if (
+        typeof studentId !== 'string' ||
+        studentId.trim().length === 0
+      ) {
+        throw new AppError(
+          400,
+          'STUDENT_ID_REQUIRED',
+          'A valid student ID is required.',
+        );
+      }
+
+      const enrollment =
+        await dropStudentFromCourse(
+          courseId,
+          studentId,
+          request.auth.userId,
+          request.ip,
+        );
+
+      response.status(200).json({
+        data: {
+          enrollment,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  };

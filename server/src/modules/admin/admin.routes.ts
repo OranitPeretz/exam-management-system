@@ -16,6 +16,7 @@ import {
 } from './admin-user.schemas.js';
 import {
     createManagedCourseController,
+    dropStudentEnrollmentController,
     enrollStudentController,
     listManagedCoursesController,
 } from './admin-course.controller.js';
@@ -76,4 +77,9 @@ adminRouter.post(
     '/courses/:courseId/enrollments',
     validateBody(enrollStudentSchema),
     enrollStudentController,
+);
+
+adminRouter.delete(
+  '/courses/:courseId/enrollments/:studentId',
+  dropStudentEnrollmentController,
 );
