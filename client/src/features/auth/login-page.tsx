@@ -15,11 +15,9 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import {
-  LockOutlined,
-  Visibility,
-  VisibilityOff,
-} from '@mui/icons-material';
+import LockOutlined from '@mui/icons-material/LockOutlined';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router';
