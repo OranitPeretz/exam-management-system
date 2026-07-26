@@ -44,6 +44,9 @@ export function DashboardPage() {
         user.role === 'LECTURER' ||
         user.role === 'ADMIN';
 
+    const canManageUsers =
+        user.role === 'ADMIN';
+
     const canViewStudentExams =
         user.role === 'STUDENT';
 
@@ -146,16 +149,47 @@ export function DashboardPage() {
                                 Your available actions are determined by your authenticated role.
                             </Typography>
 
-                            {canManageExams && (
-                                <Button
-                                    variant="contained"
-                                    sx={{ mt: 3 }}
-                                    onClick={() =>
-                                        navigate('/lecturer/exams')
-                                    }
+                            {(canManageUsers || canManageExams) && (
+                                <Stack
+                                    direction={{
+                                        xs: 'column',
+                                        sm: 'row',
+                                    }}
+                                    spacing={2}
+                                    sx={{
+                                        mt: 3,
+                                        alignItems: {
+                                            xs: 'stretch',
+                                            sm: 'center',
+                                        },
+                                    }}
                                 >
-                                    Manage exams
-                                </Button>
+                                    {canManageUsers && (
+                                        <Button
+                                            variant="contained"
+                                            onClick={() =>
+                                                navigate('/admin/users')
+                                            }
+                                        >
+                                            Manage users
+                                        </Button>
+                                    )}
+
+                                    {canManageExams && (
+                                        <Button
+                                            variant={
+                                                canManageUsers
+                                                    ? 'outlined'
+                                                    : 'contained'
+                                            }
+                                            onClick={() =>
+                                                navigate('/lecturer/exams')
+                                            }
+                                        >
+                                            Manage exams
+                                        </Button>
+                                    )}
+                                </Stack>
                             )}
                             {canViewStudentExams && (
                                 <Stack

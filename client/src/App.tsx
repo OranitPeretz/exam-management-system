@@ -76,6 +76,13 @@ const StudentResultDetailsPage = lazy(
     ),
 );
 
+const AdminUsersPage = lazy(
+  () =>
+    import(
+      './features/admin/admin-users-page'
+    ),
+);
+
 function RouteLoader() {
   return (
     <Box
@@ -106,6 +113,16 @@ function App() {
             path="/dashboard"
             element={<DashboardPage />}
           />
+          <Route
+            element={
+              <RoleRoute allowedRoles={['ADMIN']} />
+            }
+          >
+            <Route
+              path="/admin/users"
+              element={<AdminUsersPage />}
+            />
+          </Route>
 
           <Route
             element={
