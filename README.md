@@ -4,6 +4,13 @@
 
 ExamFlow is a full-stack academic exam management system that supports the complete examination lifecycle: academic administration, exam creation, student submissions, grading and result publication.
 
+## Live Demo
+
+- Application: https://exam-management-system-etc4.onrender.com
+- API Health: https://examflow-api-oranit.onrender.com/api/v1/health
+
+> The free backend service may require a short warm-up on the first request.
+
 ## Main Features
 
 ### Administrator
