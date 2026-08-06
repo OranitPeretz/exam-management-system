@@ -10,3 +10,5 @@ coverage/
 .DS_Store
 
 server/src/generated/prisma/
+.env.docker
+!.env.docker.example
